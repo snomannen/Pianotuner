@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="sv"><head><meta charset="utf-8"><title>Pianostämning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;1,500&display=swap">
+<style>
+:root{--bg:#eceff2;--card:#f9fafb;--tx:#16222e;--mu:#5d6b78;--ac:#1f6f78;--ln:#d3d9df;--ok:#2a8a55;--md:#b9801b;--wa:#b83a32;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111920;--card:#1a242d;--tx:#e8ecef;--mu:#8e9ba6;--ac:#5cc0c9;--ln:#2c3945;--ok:#4cc27f;--md:#e0a63c;--wa:#ee6a60}}
+:root[data-theme="dark"]{--bg:#111920;--card:#1a242d;--tx:#e8ecef;--mu:#8e9ba6;--ac:#5cc0c9;--ln:#2c3945;--ok:#4cc27f;--md:#e0a63c;--wa:#ee6a60}
+html,body{height:auto}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:520px;margin:0 auto;padding:0 14px 40px}
+#tabs{display:flex;gap:4px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 14px;max-width:520px;margin:0 auto;z-index:2}
+#tabs button{flex:1;padding:10px;border:0;border-radius:10px;background:transparent;color:var(--mu);font:inherit;font-weight:600}
+#tabs button.on{background:var(--card);color:var(--tx);box-shadow:inset 0 -3px 0 var(--ac)}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:14px;margin:10px 0}
+h2{font:500 1.15rem "Newsreader",Georgia,serif;margin:0 0 6px}
+.mu{color:var(--mu)}small{color:var(--mu)}p{margin:6px 0}
+button{font:inherit;cursor:pointer}
+.b{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600;width:100%}
+:root[data-theme="dark"] .b{color:#06161a}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .b{color:#06161a}}
+.s{background:transparent;color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:8px 12px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.nb{display:flex;align-items:center;gap:6px}.nb button{width:48px;height:48px;font-size:1.3rem;padding:0}
+.nm{flex:1;text-align:center}
+#nn{font:italic 500 3.4rem/1 "Newsreader",Georgia,serif}
+#nf{font-size:1.05rem;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips button{padding:6px 12px;border-radius:99px;border:1px solid var(--ln);background:transparent;color:var(--tx)}
+.chips button.done{border-color:var(--ok)}.chips button.cur{background:var(--ac);color:#fff;border-color:var(--ac)}
+.gauge{position:relative;height:46px;border-radius:10px;background:var(--ln);overflow:hidden;margin-top:10px}
+.zone{position:absolute;left:47%;width:6%;top:0;bottom:0;background:color-mix(in srgb,var(--ok) 40%,transparent)}
+#ndl{position:absolute;top:5px;bottom:5px;width:5px;margin-left:-2.5px;border-radius:3px;background:var(--tx);left:50%;transition:left .12s}
+.sc{display:flex;justify-content:space-between;font-size:.8rem;color:var(--mu);margin-top:3px}
+#cents{font:500 2.6rem/1.1 "Newsreader",Georgia,serif;text-align:center;margin-top:8px}
+.lv{height:6px;border-radius:3px;background:var(--ln);overflow:hidden;margin:10px 0}.lv i{display:block;height:100%;width:0;background:var(--ac)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{padding:5px 4px;border-bottom:1px solid var(--ln);text-align:left}
+label{display:block;font-size:.88rem;color:var(--mu);margin-top:8px}
+input,select,textarea{width:100%;box-sizing:border-box;font:inherit;padding:9px;border-radius:8px;border:1px solid var(--ln);background:var(--bg);color:var(--tx)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+details summary{cursor:pointer;color:var(--mu)}
+[hidden]{display:none!important}
+</style></head><body>
+<div id="tabs"><button data-t="an" class="on">Analys</button><button data-t="tu">Stämma</button><button data-t="lg">Loggbok</button></div>
+<main>
+<div id="nb" class="card">
+ <div class="nb"><button class="s" data-st="-12" aria-label="Oktav ner">«</button><button class="s" data-st="-1" aria-label="Halvton ner">‹</button>
+ <div class="nm"><div id="nn">A4</div><div id="nf"></div><small id="ns"></small></div>
+ <button class="s" data-st="1" aria-label="Halvton upp">›</button><button class="s" data-st="12" aria-label="Oktav upp">»</button></div>
+ <div class="chips" id="chips"></div>
+</div>
+
+<section id="an">
+ <div class="card"><h2>Mät pianots inharmonicitet</h2>
+ <p>Starta mikrofonen, välj en ton och tryck Mät. Slå an tonen kraftigt och håll tangenten nere i tre sekunder. Mät minst A1–A6 för bäst resultat.</p>
+ <small>Dämpa grannsträngarna med filt eller gummikil så att bara en sträng ljuder. Ställ telefonen nära strängarna och stäng av fläktar.</small>
+ <div class="lv"><i id="lv"></i></div>
+ <button class="b" id="meas">Mät vald ton</button>
+ <p id="ans" class="mu"></p></div>
+ <div class="card"><h2>Uppmätta toner</h2><div id="prof"></div>
+ <button class="s" id="clr" style="margin-top:8px">Rensa mätningar</button></div>
+</section>
+
+<section id="tu" hidden>
+ <div class="card">
+ <div class="lv"><i id="lv2"></i></div>
+ <div class="gauge"><i class="zone"></i><i id="ndl"></i></div>
+ <div class="sc"><span>−50¢</span><span>0</span><span>+50¢</span></div>
+ <div id="cents">–</div><p id="hint" class="mu" style="text-align:center">Starta mikrofonen och slå an tonen.</p>
+ <div class="row" style="margin-top:8px"><button class="b" id="mic">Starta mikrofon</button><button class="s" id="tone">Referenston</button></div>
+ <button class="s" id="mark" style="width:100%;margin-top:8px">Markera tonen som stämd</button>
+ <small id="sess"></small></div>
+ <div class="card"><h2>Inställningar</h2>
+ <div class="row"><div><label for="a4">Stämton A4 (Hz)</label><input id="a4" type="number" step="0.1" min="400" max="480"></div>
+ <div><label for="oct">Oktavstil</label><select id="oct"><option value="1">2:1 (mildare)</option><option value="2">4:2 (vanligast)</option><option value="3">6:3 (kraftigare)</option></select></div></div>
+ <small>Målfrekvenserna räknas från din uppmätta inharmonicitet. Utan mätning används ett typiskt värde för pianon.</small></div>
+</section>
+
+<section id="lg" hidden>
+ <div class="card"><h2>Ny stämning</h2>
+ <p class="mu">Markerade toner i pågående session: <b id="sn">0</b></p>
+ <div class="row"><div><label for="dt">Datum</label><input id="dt" type="date"></div><div><label for="tp">Temp (°C)</label><input id="tp" type="number" inputmode="decimal"></div><div><label for="rh">RF (%)</label><input id="rh" type="number" inputmode="decimal"></div></div>
+ <div class="row"><div><label for="a4b">A4 före (Hz)</label><input id="a4b" type="number" step="0.1"></div><div><label for="a4a">A4 efter (Hz)</label><input id="a4a" type="number" step="0.1"></div></div>
+ <label for="cm">Anteckning</label><textarea id="cm" rows="3"></textarea>
+ <button class="b" id="save" style="margin-top:10px">Spara i loggen</button></div>
+ <div id="ll"></div>
+ <button class="s" id="cp" style="width:100%">Kopiera loggen som text</button>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const NAMES=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','B','H'];
+const nm=m=>NAMES[m%12]+(Math.floor(m/12)-1);
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cfg=Object.assign({a4:440,oct:2},ld('pt:cfg',{})),prof=ld('pt:prof',{}),log=ld('pt:log',[]),sess=ld('pt:sess',{});
+let note=69,ac,an,buf,hold,capUntil=0,tone=null,tab='an',T=null,last=null,lastT=0;
+const et=m=>cfg.a4*2**((m-69)/12);
+const Bdef=m=>Math.max(1.5e-4,3e-4*Math.exp(.04*(m-60)));
+function Bm(m){const ks=Object.keys(prof).map(Number).sort((a,b)=>a-b);if(!ks.length)return Bdef(m);
+ const lr=k=>Math.log(prof[k].B/Bdef(k));let r;
+ if(m<=ks[0])r=lr(ks[0]);else if(m>=ks[ks.length-1])r=lr(ks[ks.length-1]);
+ else{let i=0;while(ks[i+1]<m)i++;const t=(m-ks[i])/(ks[i+1]-ks[i]);r=lr(ks[i])*(1-t)+lr(ks[i+1])*t}
+ return Bdef(m)*Math.exp(r)}
+// Förhållande mellan grundton n och n+12 när överton 2mm på n matchar överton mm på n+12
+function ratio(m,mm){const B=Bm(m),C=Bm(m+12);return 2*Math.sqrt((1+4*mm*mm*B)/(1+B))*Math.sqrt((1+C)/(1+mm*mm*C))}
+function targets(){if(T)return T;const A={};A[69]=cfg.a4;
+ for(let m=69;m<117;m+=12)A[m+12]=A[m]*ratio(m,cfg.oct);
+ for(let m=69;m>21;m-=12)A[m-12]=A[m]/ratio(m-12,cfg.oct);
+ T={};for(let m=21;m<=108;m++){const a=21+Math.floor((m-21)/12)*12;T[m]=A[a]*Math.pow(A[a+12]/A[a],(m-a)/12)}return T}
+const inh=(k,B)=>Math.sqrt((1+B*k*k)/(1+B));
+// Spektrum
+function ctx(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)()}ac.resume();return ac}
+async function mic(){if(an)return true;
+ try{const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+ const c=ctx();an=c.createAnalyser();an.fftSize=32768;an.smoothingTimeConstant=.4;an.minDecibels=-120;an.maxDecibels=0;
+ c.createMediaStreamSource(st).connect(an);buf=new Float32Array(an.frequencyBinCount);hold=new Float32Array(an.frequencyBinCount);
+ $('#mic').textContent='Mikrofon på';$('#mic').disabled=true;requestAnimationFrame(loop);return true}
+ catch(e){const t='Mikrofonen kunde inte startas ('+(e&&e.name||'okänt fel')+'). Tillåt mikrofonåtkomst för sidan i webbläsarens inställningar.';$('#ans').textContent=t;$('#hint').textContent=t;return false}}
+function pk(a,f,w){const hz=ac.sampleRate/an.fftSize,d=Math.max(f*(2**(w/1200)-1),3*hz);
+ const lo=Math.max(45,Math.floor((f-d)/hz)),hi=Math.min(a.length-45,Math.ceil((f+d)/hz));if(hi<=lo)return null;
+ let b=lo;for(let i=lo;i<=hi;i++)if(a[i]>a[b])b=i;if(b===lo||b===hi)return null;
+ const y0=a[b-1],y1=a[b],y2=a[b+1],den=y0-2*y1+y2,dl=den?Math.max(-1,Math.min(1,.5*(y0-y2)/den)):0;
+ const s=[];for(let i=b-40;i<=b+40;i++)if(Math.abs(i-b)>4)s.push(a[i]);s.sort((x,y)=>x-y);
+ return{f:(b+dl)*hz,snr:y1-s[s.length>>1]}}
+function fit(L){const n=L.length;if(n<2)return null;let sx=0,sy=0,sxx=0,sxy=0;
+ for(const{k,p}of L){const x=k*k,y=(p/k)**2;sx+=x;sy+=y;sxx+=x*x;sxy+=x*y}
+ const d=n*sxx-sx*sx;if(!d)return null;const s=(n*sxy-sx*sy)/d,c=(sy-s*sx)/n;if(c<=0)return null;
+ const B=s/c;if(B<2e-5||B>.03)return null;return{f0:Math.sqrt(c),B}}
+function analyze(a,m){const fe=et(m),Bd=Bdef(m);let best=null;
+ for(let k=1;k<=6;k++){const e=k*fe*inh(k,Bd)*Math.sqrt(1+Bd);if(e>7000)break;const p=pk(a,e,70);
+  if(p&&p.snr>12&&(!best||p.snr>best.snr))best={k,p:p.f,snr:p.snr}}
+ if(!best)return null;
+ let L=[{k:best.k,p:best.p}],f0=best.p/(best.k*Math.sqrt(1+Bd*best.k**2)),B=Bd;
+ for(let k=1;k<=24;k++){if(L.some(x=>x.k===k))continue;const e=k*f0*Math.sqrt(1+B*k*k);if(e>9000)break;
+  const p=pk(a,e,k<4?45:35);if(p&&p.snr>12){L.push({k,p:p.f});L.sort((x,y)=>x.k-y.k);const r=fit(L);if(r){f0=r.f0;B=r.B}}}
+ const r=fit(L);if(!r)return{n:L.length};
+ let ss=0;for(const{k,p}of L)ss+=(1200*Math.log2(p/(k*r.f0*Math.sqrt(1+r.B*k*k))))**2;
+ return{n:L.length,B:r.B,f1:r.f0*Math.sqrt(1+r.B),rms:Math.sqrt(ss/L.length)}}
+function finish(){const r=analyze(hold,note);
+ if(!r||!r.B||r.n<4||r.rms>10){$('#ans').textContent=`Mätningen blev osäker (${r?r.n:0} övertoner hittades). Slå an tonen tydligare, dämpa grannsträngar och försök igen.`;return}
+ prof[note]={B:r.B,f:r.f1,n:r.n,rms:r.rms};sv('pt:prof',prof);T=null;
+ const c=1200*Math.log2(r.f1/et(note));
+ $('#ans').textContent=`${nm(note)}: B = ${(r.B*1e4).toFixed(2)}·10⁻⁴, ${r.n} övertoner, grundton ${r.f1.toFixed(2)} Hz (${c>=0?'+':''}${c.toFixed(1)}¢ mot jämn stämning).`;
+ rNote();rProf()}
+// Huvudloop
+function loop(){an.getFloatFrequencyData(buf);const hz=ac.sampleRate/an.fftSize;let mx=-200;
+ for(let i=Math.floor(25/hz);i<5000/hz;i++)if(buf[i]>mx)mx=buf[i];
+ const lv=Math.max(0,Math.min(100,(mx+100)*1.25))+'%';$('#lv').style.width=lv;$('#lv2').style.width=lv;
+ if(capUntil){for(let i=0;i<buf.length;i++)if(buf[i]>hold[i])hold[i]=buf[i];
+  const left=capUntil-performance.now();if(left<=0){capUntil=0;finish()}else $('#ans').textContent=`Lyssnar… ${Math.ceil(left/1000)} s`}
+ if(tab==='tu')tune();requestAnimationFrame(loop)}
+function tune(){const t=targets()[note],B=Bm(note);
+ if(tone){$('#hint').textContent='Referenston spelar. Stäng av den för att mäta.';return}
+ let best=null;for(let k=1;k<=6;k++){const e=t*k*inh(k,B);if(e>8000)break;const p=pk(buf,e,60);
+  if(p&&p.snr>15&&(!best||p.snr>best.snr))best={k,p:p.f}}
+ const now=performance.now();
+ if(best){const f1=best.p/(best.k*inh(best.k,B)),c=1200*Math.log2(f1/t);last=c;lastT=now;show(c,1);
+  $('#hint').textContent=`${Math.abs(c)<=3?'Stämd':c>0?'För hög – stäm ner':'För låg – stäm upp'} · lyssnar på överton ${best.k}`}
+ else if(now-lastT>1500){last=null;$('#cents').textContent='–';$('#cents').style.color='';$('#ndl').style.left='50%';$('#ndl').style.opacity=.3;$('#hint').textContent='Slå an tonen (en sträng i taget).'}}
+function show(c,o){const a=Math.abs(c);$('#cents').textContent=(c>=0?'+':'')+c.toFixed(1)+'¢';
+ $('#cents').style.color=a<=3?'var(--ok)':a<=10?'var(--md)':'var(--wa)';
+ $('#ndl').style.left=Math.max(2,Math.min(98,50+c))+'%';$('#ndl').style.opacity=o}
+// Rendering
+function rNote(){const t=targets()[note],s=1200*Math.log2(t/et(note));
+ $('#nn').textContent=nm(note);$('#nf').textContent=t.toFixed(2)+' Hz';
+ $('#ns').textContent=(s>=0?'+':'')+s.toFixed(1)+'¢ mot jämn stämning';if(tone)tone.frequency.value=t;
+ $('#chips').innerHTML=[33,45,57,69,81,93].map(m=>`<button data-n="${m}" class="${prof[m]?'done':''} ${m===note?'cur':''}">${nm(m)}${prof[m]?' ✓':''}</button>`).join('');
+ $('#sess').textContent=Object.keys(sess).length?`${Object.keys(sess).length} toner markerade i sessionen.`:'';$('#sn').textContent=Object.keys(sess).length}
+function rProf(){const ks=Object.keys(prof).map(Number).sort((a,b)=>a-b);
+ $('#prof').innerHTML=ks.length?`<table><tr><th>Ton</th><th>B (·10⁻⁴)</th><th>Övertoner</th><th>Avvikelse</th></tr>${ks.map(m=>`<tr><td>${nm(m)}</td><td>${(prof[m].B*1e4).toFixed(2)}</td><td>${prof[m].n}</td><td>${prof[m].rms.toFixed(1)}¢</td></tr>`).join('')}</table>`:'<p class="mu">Inga mätningar än. Utan dem används ett typiskt värde.</p>'}
+function rLog(){$('#sn').textContent=Object.keys(sess).length;
+ $('#ll').innerHTML=log.length?log.map((e,i)=>`<div class="card"><b>${esc(e.date)}</b> – ${e.n} toner<br><small>A4 ${e.a4b||'–'} → ${e.a4a||'–'} Hz${e.t?' · '+esc(e.t)+' °C':''}${e.rh?' · '+esc(e.rh)+' % RF':''}</small>${e.c?`<p>${esc(e.c)}</p>`:''}${e.n?`<details><summary>Toner</summary><small>${e.notes.map(x=>nm(x[0])+' '+(x[1]>0?'+':'')+x[1]+'¢').join(', ')}</small></details>`:''}<button class="s" data-d="${i}" style="margin-top:8px">Ta bort</button></div>`).join(''):'<p class="mu">Inga stämningar loggade än.</p>'}
+function setTab(t){tab=t;$$('section').forEach(s=>s.hidden=s.id!==t);$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#nb').hidden=t==='lg';if(t==='lg')rLog()}
+// Händelser
+$$('#tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+$$('[data-st]').forEach(b=>b.onclick=()=>{note=Math.max(21,Math.min(108,note+ +b.dataset.st));last=null;rNote()});
+$('#chips').onclick=e=>{const n=e.target.dataset.n;if(n){note=+n;rNote()}};
+$('#meas').onclick=async()=>{if(!await mic())return;hold.fill(-200);capUntil=performance.now()+3000};
+$('#mic').onclick=mic;
+$('#clr').onclick=e=>{if(e.target.dataset.s){prof={};sv('pt:prof',prof);T=null;e.target.textContent='Rensa mätningar';delete e.target.dataset.s;rNote();rProf()}else{e.target.dataset.s=1;e.target.textContent='Tryck igen för att rensa';setTimeout(()=>{e.target.textContent='Rensa mätningar';delete e.target.dataset.s},3000)}};
+$('#tone').onclick=()=>{const c=ctx();if(tone){tone.stop();tone=null;$('#tone').textContent='Referenston';return}
+ const o=c.createOscillator(),g=c.createGain();o.frequency.value=targets()[note];g.gain.value=.15;o.connect(g).connect(c.destination);o.start();tone=o;$('#tone').textContent='Stäng av ton'};
+$('#mark').onclick=()=>{if(last==null||performance.now()-lastT>2500){$('#hint').textContent='Ingen aktuell mätning att spara. Slå an tonen först.';return}
+ sess[note]=Math.round(last*10)/10;sv('pt:sess',sess);rNote();$('#hint').textContent=`${nm(note)} markerad (${last>=0?'+':''}${sess[note]}¢).`};
+$('#a4').onchange=e=>{cfg.a4=Math.max(400,Math.min(480,+e.target.value||440));e.target.value=cfg.a4;sv('pt:cfg',cfg);T=null;rNote()};
+$('#oct').onchange=e=>{cfg.oct=+e.target.value;sv('pt:cfg',cfg);T=null;rNote()};
+$('#save').onclick=()=>{const notes=Object.entries(sess).map(([m,c])=>[+m,c]).sort((a,b)=>a[0]-b[0]);
+ log.unshift({date:$('#dt').value,a4b:+$('#a4b').value||null,a4a:+$('#a4a').value||null,t:$('#tp').value,rh:$('#rh').value,c:$('#cm').value.trim(),n:notes.length,notes});
+ sv('pt:log',log);sess={};sv('pt:sess',sess);['#tp','#rh','#a4b','#cm'].forEach(s=>$(s).value='');rNote();rLog()};
+$('#ll').onclick=e=>{const d=e.target.dataset.d;if(d==null)return;
+ if(e.target.dataset.s){log.splice(+d,1);sv('pt:log',log);rLog()}else{e.target.dataset.s=1;e.target.textContent='Tryck igen för att ta bort';setTimeout(()=>{e.target.textContent='Ta bort';delete e.target.dataset.s},3000)}};
+$('#cp').onclick=async e=>{const t=log.map(x=>`${x.date}: ${x.n} toner, A4 ${x.a4b||'–'} → ${x.a4a||'–'} Hz, ${x.t||'–'} °C, ${x.rh||'–'} % RF. ${x.c}\n${x.notes.map(n=>nm(n[0])+' '+n[1]+'¢').join(', ')}`).join('\n\n');
+ try{await navigator.clipboard.writeText(t);e.target.textContent='Kopierat'}catch(err){e.target.textContent='Kopiering blockerades'}setTimeout(()=>e.target.textContent='Kopiera loggen som text',2000)};
+$('#a4').value=cfg.a4;$('#oct').value=cfg.oct;$('#a4a').value=cfg.a4;
+{const d=new Date();$('#dt').value=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+rNote();rProf();
+</script></body></html>
